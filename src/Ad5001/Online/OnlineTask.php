@@ -10,6 +10,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\level\Level;
 use pocketmine\block\Block;
 use pocketmine\Player;
+use pocketmine\utils\Config;
 use pocketmine\item\Item;
 use pocketmine\utils\TextFormat as C;
 use pocketmine\IPlayer;
@@ -22,6 +23,7 @@ use pocketmine\math\Vector3;
         $this->sock = $sock;
         $this->datapath = $datapath;
         $this->isRunning = true;
+        $this->cfg = new Config($datapath . "config.yml", Config::YAML);
     }
     public function onRun() {
         $sock = $this->sock;
@@ -44,10 +46,14 @@ use pocketmine\math\Vector3;
              "Date: Fri, 31 Dec 1999 23:59:59 GMT \r\n" .
              "Content-Type: text/html \r\n\r\n";
              $file = ltrim($file, '/');
+             echo $fetchArray[1];
              if(file_exists($this->datapath . $file)) {
                  $Content = file_get_contents($this->datapath . $file);
              } else {
                  $Content = file_get_contents($this->datapath . "404.html");
+             }
+             if(in_array($file, $this->cfg->get("denied-pages"))) {
+                 $Content = file_get_contents($this->datapath . "403.html");
              }
              $output = $Header . $Content;
              socket_write($client,$output,strlen($output));

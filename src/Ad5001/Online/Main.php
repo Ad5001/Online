@@ -24,10 +24,13 @@ if(!file_exists($this->getDataFolder() . "index.html")) {
 if(!file_exists($this->getDataFolder() . "404.html")) {
     file_put_contents($this->getDataFolder() . "404.html", $this->getResource("404.html"));
 }
+if(!file_exists($this->getDataFolder() . "403.html")) {
+    file_put_contents($this->getDataFolder() . "403.html", $this->getResource("403.html"));
+}
 set_time_limit(0);
 
 $address = '0.0.0.0';
-$port = 8080;
+$port = $this->getConfig()->get("port");
 
 $sock = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 $result = socket_bind($sock, $address, $port) or die('Could not bind to address');
