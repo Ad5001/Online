@@ -25,17 +25,18 @@ use pocketmine\math\Vector3;
         $this->isRunning = true;
         $this->cfg = new Config($datapath . "config.yml", Config::YAML);
     }
+    public function close() {
+        $this->isRunning = false;
+    }
     public function onRun() {
         $sock = $this->sock;
-        socket_listen($sock);
-        while ($this->isRunning) {
             $client = socket_accept($sock);
             $input = socket_read($client, 1024);
             $incoming = explode("\r\n", $input);
             $fetchArray = explode(" ", $incoming[0]);
             if($fetchArray[1] == "/"){
-                $file = "index.html"; 
-                $fetchArray[1] = "index.html"; 
+                $file =  $this->cfg->get("index"); 
+                $fetchArray[1] =  $this->cfg->get("index");
              } else {
                  $filearray = [];
                  $filearray = explode("/", $fetchArray[1]);
@@ -46,20 +47,33 @@ use pocketmine\math\Vector3;
              "Date: Fri, 31 Dec 1999 23:59:59 GMT \r\n" .
              "Content-Type: text/html \r\n\r\n";
              $file = ltrim($file, '/');
-             echo $fetchArray[1];
              if(file_exists($this->datapath . $file)) {
-                 $Content = file_get_contents($this->datapath . $file);
+                 if(pathinfo($this->datapath . $file)['extension'] === "php") {
+                     ob_start();
+                     include $this->datapath . $file ;
+                     $Content = ob_get_contents();
+                     ob_end_clean();
+                 } else {
+                     $Content = file_get_contents($this->datapath . $file);
+                 }
+             $Header = "HTTP/1.1 200 OK \r\n" .
+             "Date: Fri, 31 Dec 1999 23:59:59 GMT \r\n" .
+             "Content-Type: text/html \r\n\r\n";
              } else {
-                 $Content = file_get_contents($this->datapath . "404.html");
+             $Header = "HTTP/1.1 404 NOT FOUND \r\n" .
+             "Date: Fri, 31 Dec 1999 23:59:59 GMT \r\n" .
+             "Content-Type: text/html \r\n\r\n";
+                 $Content = file_get_contents($this->datapath . $this->cfg->get("404"));
              }
-             if(in_array($file, $this->cfg->get("denied-pages"))) {
-                 $Content = file_get_contents($this->datapath . "403.html");
+             foreach($this->cfg->get("denied-pages") as $dp) {
+                 if($dp === $file) {
+                     $Header = "HTTP/1.1 403 FORBIDDEN \r\n" .
+                     "Date: Fri, 31 Dec 1999 23:59:59 GMT \r\n" .
+                     "Content-Type: text/html \r\n\r\n";
+                     $Content = file_get_contents($this->datapath . $this->cfg->get("403"));
+                 }
              }
              $output = $Header . $Content;
              socket_write($client,$output,strlen($output));
-        }
-    }
-    public function close() {
-        $this->isRunning = false;
     }
    }

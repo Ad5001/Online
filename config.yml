@@ -11,4 +11,7 @@ index: index.html
 
 # Here you can config pages that user will not be able to see !
 denied-pages:
-  - /config..yml/
+  - config.yml
+  
+  # Here you can configure the refresh in tick (20 tick = 1s)
+TimePerConnection: 20

@@ -13,7 +13,6 @@ use pocketmine\Server;
 class Main extends PluginBase{
     public function onDisable() {
         $this->socket->close();
-        socket_shutdown($this->sock, 2);
     }
 public function onEnable(){
 // $this->getServer()->getPluginManager()->registerEvents($this, $this);
@@ -35,8 +34,8 @@ $port = $this->getConfig()->get("port");
 $sock = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 $result = socket_bind($sock, $address, $port) or die('Could not bind to address');
 
-$this->socket = new OnlineTask($this, $sock, $this->getDataFolder());
-$this->getServer()->getScheduler()->scheduleAsyncTask($this->socket);
+$this->socket = new isOnlineTask($this, $sock, $this->getDataFolder());
+$this->getServer()->getScheduler()->scheduleRepeatingTask($this->socket, $this->getConfig()->get("TimePerConnection"));
 $this->sock = $sock;
 }
  public function onCommand(CommandSender $issuer, Command $cmd, $label, array $params){
