@@ -47,8 +47,27 @@ use pocketmine\math\Vector3;
              "Date: Fri, 31 Dec 1999 23:59:59 GMT \r\n" .
              "Content-Type: text/html \r\n\r\n";
              $file = ltrim($file, '/');
+             if(strpos($file, "?")) {
+                 $exe = explode("?", $file);
+                 $file = $exe[0];
+                 $exe = explode("&", $exe[1]);
+             }
+             
              if(file_exists($this->datapath . $file)) {
                  if(pathinfo($this->datapath . $file)['extension'] === "php") {
+                     if(isset($exe[0])) {
+                         $GET = [];
+                         foreach($exe as $exes) {
+                             $ex = explode("=", $exes);
+                             array_push($GET, "\"{$ex[0]}\" => \"{$ex[1]}\"");
+                         }
+                         $current = '<?php 
+$GET = [' . implode("," . PHP_EOL, $GET) . '];
+?>' . file_get_contents($this->datapath . $file);
+                         $current = str_ireplace('$_GET', '$GET', $current);
+                         file_put_contents($this->datapath . "current.php", $current);
+                         $file = "current.php";
+                     }
                      ob_start();
                      include $this->datapath . $file ;
                      $Content = ob_get_contents();
@@ -57,19 +76,19 @@ use pocketmine\math\Vector3;
                      $Content = file_get_contents($this->datapath . $file);
                  }
              $Header = "HTTP/1.1 200 OK \r\n" .
-             "Date: Fri, 31 Dec 1999 23:59:59 GMT \r\n" .
-             "Content-Type: text/html \r\n\r\n";
+"Date: Fri, 31 Dec 1999 23:59:59 GMT \r\n" .
+"Content-Type: text/html \r\n\r\n";
              } else {
              $Header = "HTTP/1.1 404 NOT FOUND \r\n" .
-             "Date: Fri, 31 Dec 1999 23:59:59 GMT \r\n" .
-             "Content-Type: text/html \r\n\r\n";
+"Date: Fri, 31 Dec 1999 23:59:59 GMT \r\n" .
+"Content-Type: text/html \r\n\r\n";
                  $Content = file_get_contents($this->datapath . $this->cfg->get("404"));
              }
              foreach($this->cfg->get("denied-pages") as $dp) {
                  if($dp === $file) {
                      $Header = "HTTP/1.1 403 FORBIDDEN \r\n" .
-                     "Date: Fri, 31 Dec 1999 23:59:59 GMT \r\n" .
-                     "Content-Type: text/html \r\n\r\n";
+"Date: Fri, 31 Dec 1999 23:59:59 GMT \r\n" .
+"Content-Type: text/html \r\n\r\n";
                      $Content = file_get_contents($this->datapath . $this->cfg->get("403"));
                  }
              }
