@@ -29,6 +29,7 @@ use pocketmine\math\Vector3;
         $this->isRunning = false;
     }
     public function onRun() {
+            socket_listen($this->sock);
         $sock = $this->sock;
             $client = socket_accept($sock);
             $input = socket_read($client, 1024);

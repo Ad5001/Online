@@ -33,6 +33,7 @@ $port = $this->getConfig()->get("port");
 
 $sock = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 $result = socket_bind($sock, $address, $port) or die('Could not bind to address');
+$this->getLogger()->info("Website open in port §a" . $port);
 
 $this->socket = new isOnlineTask($this, $sock, $this->getDataFolder());
 $this->getServer()->getScheduler()->scheduleRepeatingTask($this->socket, $this->getConfig()->get("TimePerConnection"));
