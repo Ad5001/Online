@@ -2,7 +2,7 @@
 
 #This define the port that your website that will run.
 #****NOTE THAT YOU WILL NEED TO RE-PORTFOREWARD WITH THE NEW PORT****
-port: 8080
+port: 80
 
 # Here you can choose the pages !
 index: index.html
@@ -11,4 +11,5 @@ index: index.html
 
 # Here you can config pages that user will not be able to see !
 denied-pages:
-  - /config..yml
+  - /config.yml
+  - /router.php

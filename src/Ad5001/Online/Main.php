@@ -4,21 +4,19 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\Command;
 use pocketmine\event\Listener;
 use pocketmine\plugin\PluginBase;
+use pocketmine\network\upnp\UPnP;
 use pocketmine\Server;
- use pocketmine\Player;
- 
- use Ad5001\Online\OnlineTask;
+use pocketmine\Player;
 
 
 class Main extends PluginBase{
-    public function onDisable() {
-        $this->socket->close();
-    }
 public function onEnable(){
-// $this->getServer()->getPluginManager()->registerEvents($this, $this);
 $this->saveDefaultConfig();
 if(!file_exists($this->getDataFolder() . "index.html")) {
     file_put_contents($this->getDataFolder() . "index.html", $this->getResource("index.html"));
+}
+if(!stream_resolve_include_path("router.php")) {
+    file_put_contents($this->getDataFolder() . "router.php", $this->getResource("handler.php"));
 }
 if(!file_exists($this->getDataFolder() . "404.html")) {
     file_put_contents($this->getDataFolder() . "404.html", $this->getResource("404.html"));
@@ -31,17 +29,32 @@ set_time_limit(0);
 $address = '0.0.0.0';
 $port = $this->getConfig()->get("port");
 
-$sock = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
-$result = socket_bind($sock, $address, $port) or die('Could not bind to address');
-$this->getLogger()->info("Website open in port §a" . $port);
+$this->getServer()->getScheduler()->scheduleAsyncTask(new execTask($this->getServer()->getFilePath()));
+// UPnP::PortForward($port); \\\\ Beta for Windows
+}
+}
 
-$this->socket = new isOnlineTask($this, $sock, $this->getDataFolder());
-$this->getServer()->getScheduler()->scheduleRepeatingTask($this->socket, $this->getConfig()->get("TimePerConnection"));
-$this->sock = $sock;
-}
- public function onCommand(CommandSender $issuer, Command $cmd, $label, array $params){
-switch($cmd->getName()){
-}
-return false;
- }
+class execTask extends \pocketmine\scheduler\AsyncTask {
+
+    public function __construct(string $path) {
+        $this->path = $path;
+    }
+
+    public function onRun() {
+        $address = '0.0.0.0';
+        $port = yaml_parse(file_get_contents("plugins\\Online\\config.yml"))["port"];
+        // shell_exec("cd plugins/Online");
+        switch(true) {
+            case stristr(PHP_OS, "WIN"):
+            echo '"%CD%\\bin\\php\\php.exe -t %CD%\\plugins\\Online -n -d include_path=\'%CD%\\plugins\\Online\\\' -S ' . $address . ":" . $port . ' -f %CD%\\plugins\\Online\\router.php"';
+            shell_exec('start "Online Listener" cmd /c "%CD%\\bin\\php\\php.exe -t %CD%\\plugins\\Online -n -d include_path=\'%CD%\\plugins\\Online\\\' -d extension=\'%CD%\\bin\\php\\ext\\php_yaml.dll\' -S ' . $address . ":" . $port . ' router.php"');
+            break;
+            case stristr(PHP_OS, "DAR"):
+            shell_exec('open -a Terminal "' . $this->path . "bin\\php\\php.exe -t " . $this->path . "plugins\\Online -n -d include_path=\'" . $this->path . "plugins\\Online\\\' -d extension=\'" . $this->path . "bin\\php\\ext\\php_yaml.dll\' -S ' . $address . ":" . $port . ' router.php");
+            break;
+            case stristr(PHP_OS, "LINUX"):
+            shell_exec('gnome-terminal -e "' . $this->path . "bin\\php\\php.exe -t " . $this->path . "plugins\\Online -n -d include_path=\'" . $this->path . "plugins\\Online\\\' -d extension=\'" . $this->path . "bin\\php\\ext\\php_yaml.dll\' -S ' . $address . ":" . $port . ' router.php");
+            break;
+        }
+    }
 }
