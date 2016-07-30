@@ -3,6 +3,7 @@ name: Online
 author:  Ad5001
 version: 1.4
 api: [2.0.0]
+description: "You're own website, on PocketMine.'"
 main: Ad5001\Online\Main
 commands: []
 permissions: []

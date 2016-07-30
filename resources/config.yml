@@ -13,3 +13,7 @@ index: index.html
 denied-pages:
   - /config.yml
   - /router.php
+
+# Here you can choose if the server automaticly disable itself on server stop. 
+# DO NOT DISABLE THIS OPTION WHEN YOU'RE USING AN HOSTER ! OR YOU WON4T BE ABLE TO STOP IT !
+KillOnShutdown: true

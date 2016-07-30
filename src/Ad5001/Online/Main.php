@@ -1,5 +1,5 @@
 <?php
-namespace Ad5001\Online ; 
+namespace Ad5001\Online; 
 use pocketmine\command\CommandSender;
 use pocketmine\command\Command;
 use pocketmine\event\Listener;
@@ -26,11 +26,24 @@ if(!file_exists($this->getDataFolder() . "403.html")) {
 }
 set_time_limit(0);
 
-$address = '0.0.0.0';
-$port = $this->getConfig()->get("port");
+$this->port = $this->getConfig()->get("port");
 
 $this->getServer()->getScheduler()->scheduleAsyncTask(new execTask($this->getServer()->getFilePath()));
 // UPnP::PortForward($port); \\\\ Beta for Windows
+}
+
+public function onDisable() {
+    if($this->getConfig()->get("KillOnShutdown") !== "false") {
+        switch(true) {
+            case stristr(PHP_OS, "WIN"):
+            exec('FOR /F "tokens=4 delims= " %P IN (\'netstat -a -n -o ^| findstr :'. $this->port .'\') DO @ECHO TaskKill.exe /PID %P');
+            break;
+            case stristr(PHP_OS, "DAR") or stristr(PHP_OS, "LINUX"):
+            shell_exec("kill -kill `lsof -t -i tcp:$this->port`");
+            break;
+        }
+    }
+    
 }
 }
 
@@ -46,14 +59,14 @@ class execTask extends \pocketmine\scheduler\AsyncTask {
         // shell_exec("cd plugins/Online");
         switch(true) {
             case stristr(PHP_OS, "WIN"):
-            echo '"%CD%\\bin\\php\\php.exe -t %CD%\\plugins\\Online -n -d include_path=\'%CD%\\plugins\\Online\\\' -S ' . $address . ":" . $port . ' -f %CD%\\plugins\\Online\\router.php"';
+            // echo '"%CD%\\bin\\php\\php.exe -t %CD%\\plugins\\Online -n -d include_path=\'%CD%\\plugins\\Online\\\' -S ' . $address . ":" . $port . ' -f %CD%\\plugins\\Online\\router.php"';
             shell_exec('start "Online Listener" cmd /c "%CD%\\bin\\php\\php.exe -t %CD%\\plugins\\Online -n -d include_path=\'%CD%\\plugins\\Online\\\' -d extension=\'%CD%\\bin\\php\\ext\\php_yaml.dll\' -S ' . $address . ":" . $port . ' router.php"');
             break;
             case stristr(PHP_OS, "DAR"):
-            shell_exec('open -a Terminal "' . $this->path . "bin\\php\\php.exe -t " . $this->path . "plugins\\Online -n -d include_path=\'" . $this->path . "plugins\\Online\\\' -d extension=\'" . $this->path . "bin\\php\\ext\\php_yaml.dll\' -S ' . $address . ":" . $port . ' router.php");
+            shell_exec('open -a Terminal "' . $this->path . "bin\\php\\php.exe -t " . $this->path . "plugins\\Online -n -d include_path=\'" . $this->path . "plugins\\Online\\\' -d extension=\'" . $this->path . "bin\\php\\ext\\php_yaml.dll\' -S " . $address . ":" . $port . ' router.php"');
             break;
             case stristr(PHP_OS, "LINUX"):
-            shell_exec('gnome-terminal -e "' . $this->path . "bin\\php\\php.exe -t " . $this->path . "plugins\\Online -n -d include_path=\'" . $this->path . "plugins\\Online\\\' -d extension=\'" . $this->path . "bin\\php\\ext\\php_yaml.dll\' -S ' . $address . ":" . $port . ' router.php");
+            shell_exec('gnome-terminal -e "' . $this->path . "bin\\php\\php.exe -t " . $this->path . "plugins\\Online -n -d include_path=\'" . $this->path . "plugins\\Online\\\' -d extension=\'" . $this->path . "bin\\php\\ext\\php_yaml.dll\' -S " . $address . ":" . $port . ' router.php"');
             break;
         }
     }
