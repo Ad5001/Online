@@ -10,10 +10,18 @@ index: index.html
 403: 403.html
 
 # Here you can config pages that user will not be able to see !
-denied-pages:
-  - /config.yml
-  - /router.php
+denied-pages: []
+
+# Your domains (one per time). To redirect a domain here, put one per line then go to your registar CPanel and add a CName record that redirects to it !
+Domains:
+   - localhost
+
+#Parked domains: Domains that redirects to one of your domains. Same setup as shown above.
+Parked domains:
+   127.0.0.1: localhost
+   0.0.0.0: localhost
+
 
 # Here you can choose if the server automaticly disable itself on server stop. 
-# DO NOT DISABLE THIS OPTION WHEN YOU'RE USING AN HOSTER ! OR YOU WON4T BE ABLE TO STOP IT !
+# DO NOT DISABLE THIS OPTION WHEN YOU'RE USING AN HOSTER ! OR YOU WON'T BE ABLE TO STOP IT !
 KillOnShutdown: true

@@ -12,34 +12,51 @@ use pocketmine\Player;
 class Main extends PluginBase{
 public function onEnable(){
 $this->saveDefaultConfig();
-if(!file_exists($this->getDataFolder() . "index.html")) {
-    file_put_contents($this->getDataFolder() . "index.html", $this->getResource("index.html"));
-}
+
 if(!stream_resolve_include_path("router.php")) {
     file_put_contents($this->getDataFolder() . "router.php", $this->getResource("handler.php"));
 }
-if(!file_exists($this->getDataFolder() . "404.html")) {
-    file_put_contents($this->getDataFolder() . "404.html", $this->getResource("404.html"));
+foreach($this->getConfig()->get("Domains") as $d) {
+    @mkdir($this->getDataFolder() . $d);
+    if(!file_exists($this->getDataFolder() . $d . "/index.html") and !file_exists($this->getDataFolder() . $d . "/index.php")) {
+        file_put_contents($this->getDataFolder() .$d. "/index.html", $this->getResource("index.html"));
+    }
+    if(!file_exists($this->getDataFolder() .$d. "/404.html")) {
+        file_put_contents($this->getDataFolder() . $d . "/404.html", $this->getResource("404.html"));
+    }
+    if(!file_exists($this->getDataFolder() . $d . "/403.html")) {
+        file_put_contents($this->getDataFolder() .$d . "/403.html", $this->getResource("403.html"));
+    }
 }
-if(!file_exists($this->getDataFolder() . "403.html")) {
-    file_put_contents($this->getDataFolder() . "403.html", $this->getResource("403.html"));
-}
+
+register_shutdown_function("Ad5001\\Online\\Main::shutdown");
+
 set_time_limit(0);
 
 $this->port = $this->getConfig()->get("port");
 
+if(!UPnP::PortForward($this->port)) {// Beta for Windows
+    $this->getLogger()->info("Not able to port forward!");
+}
+
 $this->getServer()->getScheduler()->scheduleAsyncTask(new execTask($this->getServer()->getFilePath()));
-// UPnP::PortForward($port); \\\\ Beta for Windows
+}
+
+public static function shutdown() {
+    echo "Shutdowned !";
 }
 
 public function onDisable() {
     if($this->getConfig()->get("KillOnShutdown") !== "false") {
+        $this->getLogger()->info("Shutdowning.....");
         switch(true) {
             case stristr(PHP_OS, "WIN"):
-            exec('FOR /F "tokens=4 delims= " %P IN (\'netstat -a -n -o ^| findstr :'. $this->port .'\') DO @ECHO TaskKill.exe /PID %P');
+            shell_exec('FOR /F "tokens=5" %P IN (\'netstat -a -n -o ^| findstr 0.0.0.0:'. $this->port .'\') DO TaskKill.exe /F /PID %P');
+            $this->getLogger()->info("Shutdowned on Windows !");
             break;
             case stristr(PHP_OS, "DAR") or stristr(PHP_OS, "LINUX"):
             shell_exec("kill -kill `lsof -t -i tcp:$this->port`");
+            $this->getLogger()->info("Shutdowned on Linux or MAC !");
             break;
         }
     }
