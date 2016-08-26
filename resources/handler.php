@@ -29,6 +29,8 @@ if(!file_exists(__DIR__ . "/" . $uri)) {
         include(__DIR__ . "/" . $uri . "index.html");
     } elseif(file_exists(__DIR__ . "/" . $uri . "index.php")) {
         include(__DIR__ . "/" . $uri . "index.php");
+    } elseif(file_exists(__DIR__ . "/" . $uri . $cfg["index"])) {
+        include(__DIR__ . "/" . $uri . $cfg["index"]);
     }
 } else {
     include(__DIR__ . "/" . $uri);
