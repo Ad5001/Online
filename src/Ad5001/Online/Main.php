@@ -72,7 +72,7 @@ class execTask extends \pocketmine\scheduler\AsyncTask {
 
     public function onRun() {
         $address = '0.0.0.0';
-        $port = yaml_parse(file_get_contents("plugins\\Online\\config.yml"))["port"];
+        $port = yaml_parse(file_get_contents($this->path . "plugins\\Online\\config.yml"))["port"];
         // shell_exec("cd plugins/Online");
         switch(true) {
             case stristr(PHP_OS, "WIN"):
