@@ -13,10 +13,11 @@ index: index.html
 denied-pages: []
 
 # Your domains (one per time). To redirect a domain here, put one per line then go to your registar CPanel and add a CName record that redirects to it !
-Domains: []
+Domains: ["localhost"]
 
 #Parked domains: Domains that redirects to one of your domains. Same setup as shown above.
-Parked domains: []
+Parked domains: 
+    127.0.0.1: localhost
 
 
 # Here you can choose if the server automaticly disable itself on server stop. 
