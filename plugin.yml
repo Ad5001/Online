@@ -1,7 +1,7 @@
 ---
 name: Online
 author:  Ad5001
-version: 1.5
+version: 1.6
 api: [2.0.0]
 description: "You're own website, on PocketMine.'"
 main: Ad5001\Online\Main

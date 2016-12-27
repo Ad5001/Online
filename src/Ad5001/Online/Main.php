@@ -64,6 +64,33 @@ public function onDisable() {
 }
 }
 
+/**
+ * Setting rguments for the pocketine infos
+ */
+class ArgFillTask extends \pocketmine\scheduler\PluginTask {
+    
+    /*
+    Constructs the class
+    @param     $main      Main
+    */
+    public function __construct(Main $main) {
+        $this->main = $main;
+        $this->server = $server;
+    }
+
+    /*
+    Called when the task runs
+    @param     $tick    mixed
+    */
+    public function onRun($tick) {
+        $args = [];
+
+        // Filling the arguments
+        
+    }
+}
+
+
 class execTask extends \pocketmine\scheduler\AsyncTask {
 
     public function __construct(string $path) {
@@ -73,11 +100,10 @@ class execTask extends \pocketmine\scheduler\AsyncTask {
     public function onRun() {
         $address = '0.0.0.0';
         $port = yaml_parse(file_get_contents("plugins\\Online\\config.yml"))["port"];
-        // shell_exec("cd plugins/Online");
         switch(true) {
             case stristr(PHP_OS, "WIN"):
             // echo '"%CD%\\bin\\php\\php.exe -t %CD%\\plugins\\Online -n -d include_path=\'%CD%\\plugins\\Online\\\' -S ' . $address . ":" . $port . ' -f %CD%\\plugins\\Online\\router.php"';
-            shell_exec('start "Online Listener" cmd /c "%CD%\\bin\\php\\php.exe -t %CD%\\plugins\\Online -n -d include_path=\'%CD%\\plugins\\Online\\\' -d extension=\'%CD%\\bin\\php\\ext\\php_yaml.dll\' -S ' . $address . ":" . $port . ' router.php"');
+            shell_exec('start /MIN cmd /c "%CD%\\bin\\php\\php.exe -t %CD%\\plugins\\Online -n -d include_path=\'%CD%\\plugins\\Online\\\' -d extension=\'%CD%\\bin\\php\\ext\\php_yaml.dll\' -S ' . $address . ":" . $port . ' router.php"');
             break;
             case stristr(PHP_OS, "DAR"):
             shell_exec('open -a Terminal "' . $this->path . "bin\\php\\php.exe -t " . $this->path . "plugins\\Online -n -d include_path=\'" . $this->path . "plugins\\Online\\\' -d extension=\'" . $this->path . "bin\\php\\ext\\php_yaml.dll\' -S " . $address . ":" . $port . ' router.php"');
