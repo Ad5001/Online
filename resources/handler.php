@@ -15,6 +15,14 @@ $_PLAYERS = $args["PLAYERS"];
 $_LEVELS = $args["LEVELS"];
 
 
+// Removing GET from the request
+$uri = $_SERVER["REQUEST_URI"];
+if(strpos($uri, "?") !== false) {
+    $uri = explode("?", $uri)[0];
+}
+$_SERVER["REQUEST_URI"] = $uri;
+
+
 // Calling handlers.
 foreach($args["HANDLERS"] as $handler) {
     // echo $handler;
@@ -34,13 +42,6 @@ if(in_array($host, $cfg["Domains"])) {
 } else {
     unallowedDomain();
     return true;
-}
-
-
-// Removing GET from the request
-$uri = $_SERVER["REQUEST_URI"];
-if(strpos($uri, "?") !== false) {
-    $uri = explode("?", $uri)[0];
 }
 
 
