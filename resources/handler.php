@@ -25,7 +25,6 @@ $_SERVER["REQUEST_URI"] = $uri;
 
 // Calling handlers.
 foreach($args["HANDLERS"] as $handler) {
-    // echo $handler;
     if((include $handler) == false) {
         return true;
     }
@@ -46,20 +45,20 @@ if(in_array($host, $cfg["Domains"])) {
 
 
 // Getting the file & output it if possible.
-if(!file_exists(__DIR__ . "/../" . $uri)) {
-    echo file_get_contents(__DIR__ . "/../" . $host . "/" . $cfg[404]);
+if(!file_exists(__DIR__ . "/../$host" . $uri)) {
+    include __DIR__ . "/../$host" . "/" . $cfg[404];
 } elseif(in_array($uri, $cfg["denied-pages"])) {
-    echo file_get_contents(__DIR__ . "/../" . $host . "/" . $cfg[403]);
+    include __DIR__ . "/../$host" . "/" . $cfg[403];
 } elseif(is_dir(__DIR__ . "/../" .$uri)) {
-    if(file_exists(__DIR__ . "/../" . $uri . "index.html")) {
-        include(__DIR__ . "/../" . $uri . "index.html");
-    } elseif(file_exists(__DIR__ . "/../" . $uri . "index.php")) {
-        include(__DIR__ . "/../" . $uri . "index.php");
-    } elseif(file_exists(__DIR__ . "/../" . $uri . $cfg["index"])) {
-        include(__DIR__ . "/../" . $uri . $cfg["index"]);
+    if(file_exists(__DIR__ . "/../$host" . $uri . "index.html")) {
+        include __DIR__ . "/../$host" . $uri . "index.html";
+    } elseif(file_exists(__DIR__ . "/../$host" . $uri . "index.php")) {
+        include __DIR__ . "/../$host" . $uri . "index.php";
+    } elseif(file_exists(__DIR__ . "/../$host" . $uri . $cfg["index"])) {
+        include __DIR__ . "/../$host" . $uri . $cfg["index"];
     }
 } else {
-    include(__DIR__ . "/" . $uri);
+    include __DIR__ . "/" . $host  . $uri;
 }
 
 
