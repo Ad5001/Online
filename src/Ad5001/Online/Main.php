@@ -209,7 +209,6 @@ class ArgFillTask extends \pocketmine\scheduler\PluginTask {
             $pl["client_secret"] = $player->getClientSecret();
             $pl["banned"] = $player->isBanned(); // I don't know if tis could be to false but we never know xD
             $pl["whitelisted"] = $player->isWhitelisted();
-            $pl["client_secret"] = $player->getClientSecret();
             $pl["first_played"] = $player->getFirstPlayed();
             $pl["last_played"] = $player->getLastPlayed();
             $pl["played_before"] = $player->hasPlayedBefore();
@@ -236,7 +235,6 @@ class ArgFillTask extends \pocketmine\scheduler\PluginTask {
             $lvl["tick_rate"] = $level->getTickRate();
             $lvl["id"] = $level->getId();
             $lvl["auto_save"] = $level->getAutoSave();
-            $lvl["tick_rate"] = $level->getTickRate();
             $lvl["players"] = [];
             foreach ($level->getPlayers() as $pl) {
                 $lvl["players"][$pl->getName()] = $players[$pl->getName()];

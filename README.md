@@ -64,7 +64,7 @@ Parked domains:
 You might have seen that the tutorials above haven't covered the whole configs and stuff !
 Here are some tips & tricks that what are they here for !
 
-1. <u>Changing port</u>: Yes, it's not always easy to use port 80 ! It's often binded and stuffs... CHange the value of "port" in the config and set it to your new port and it will work fine !
+1. <u>Changing port</u>: Yes, it's not always easy to use port 80 ! It's often binded... CHange the value of "port" in the config and set it to your new port and it will work fine !
 2. <u>Errors and index</u>: Change index, 404 and 403 to customize even more you're website ! Change them to customisze even more your website ! 404 is when a page is not found, 403 is when the user is not allowed to view this page. You can change them to make it even more customisable !
 3. <u>Denied pages</u>: Sometimes, you don't want the user to see some pages so add them to the denied page array to block them from being viewed ! Example: 
 ```yaml
@@ -79,6 +79,119 @@ FOR /F "tokens=5" %P IN (\'netstat -a -n -o ^| findstr 0.0.0.0:<PORT>') DO TaskK
 MACOSX and LINUX:
 ```bash
 kill -kill `lsof -t -i tcp:<port`
+```
+
+
+### API
+With 1.6, API has been introduced with many ways to customize and filter requests to your website and interaction with your server.     
+
+##### Pocketmine, players, plugins, and levels variables with infos
+First feature of the API is to get default infos about pocketmine or any plugin, players, or levels.    
+This allow recognition from the webserver of the server.    
+ - Pocketmine infos are located at $_POCKETMINE["info"]
+ - Players infos are located at $_PLAYERS["name of the player"]["info"]
+ - Levels infos are located at $_LEVELS["name of the level"]["info"];
+ - Plugins infos are located at $_PLUGINS["name of the plugin"]["info"]
+
+That being said, take a look at saved variables:
+####### Pocketmine:
+- software_name: Name of the software used as pocketmine (such as PocketMine-MP, Genisys, ...)
+- software_codename: Codename of the software used as pocketmine (such as Unleached for PocketMine-MP ...)
+- software_version: Version of the software used as pocketmine (such as 1.5, 1.6, ...)
+- mcpe_version: MCPE version of the software.
+- API: Plugins API version.
+- software datapath: Root path of the server
+- software_pluginpath: Plugins path of the server
+- max_players: Maximum number of players in the server.
+- port: Port listened by pocketmine.
+- view_distance: View distance of the players on the server.
+- ip: IP of the server. Might be usable.
+- server_unique&#95;id: Returns the unique id of the server.
+- auto_save: Boolean if the server has enabled autosaved
+- default_gamemode: Default gamemode of the server.
+- force_gamemode: Boolean if the server has enabled force gamemode.
+- difficulty: Diffiulty of the server
+- spawn_radius: Radius of the spawn protection.
+- allow_flight: Boolean if the server enabled flight for players in every gamamode
+- ultra_hardcore: Boolean if the server is in ultra hardcore, (banned if dead, no regeneration with food)
+- motd: MOTD of the server.
+- tps: Ticks Per Second of the server.
+- lang_name: The name of the lang of the server.
+- lang_code: The 3 char code letters of a language.
+
+####### Plugins:
+
+- name: Name of the plugin
+- is_enabled: Is the plugin enabled
+- data_folder: Path to plugin data folder
+- apis: Compatible APIs of the plugin
+- authors: Authors of the plugin
+- prefix: Logger prefix of the plugin (mostly "[name of the plugin]")
+- commands: Commands registered by the plugin
+- dependencies: Plugin dependencies
+- description: Description of the plugin
+- load_before: When should the plugin loa (STARTUP or POSTLOAD)
+- main: Main class of the plugin
+- order: Order of the plugin
+- soft_depend: Pocketmine dependency of the plugin
+- version: Version of the plugin
+- website: Website of the plugin.
+
+####### Players:
+- client_secret: Secret id of the client.
+- banned: Is the player banned (should not be true, but we never know).
+- whitelisted: Is the player whitelisted
+- first_played: Date of the first play of the the player
+- last_played: Date of the last play of the the player
+- played_before: Has player played before
+- allow_flight: Is the player allowed to fly
+- flying: Is the player flying
+- auto_jump: Has the player enabled auto jump
+- op: Is the player OP
+- connected: Is the player connected (Well he should x)).
+- display_name: The displayed name of the player
+- ip: Player's ip
+- port: Port of the listening player's IP.
+- is_sleeping: Is the player sleeping
+- ticks_in&#95;air: Ticks in air of the player 
+- gamemode: Gamemode of the player
+- name: Name of the player
+- loader_id: Id of the loader of the player.
+
+####### Levels:
+- tick_rate: Tick rate of the level
+- id: Id of the level
+- auto_save: Has the level auto save
+- players: Players in the level with their info.
+- time: Time in the level
+- name: Name of the levels
+- folder_name: Folder name of the player
+- seed: Seed of the player
+
+##### Passing and getting "arguments" to the thread.
+Second API features are variables that you can pass to the webserver. Variables will be passed as $_PLUGINS["name"]["id of the variable"].      
+To pass an argument, add this line to your code.
+```php
+$this->getServer()->getPluginManager()->getPlugin("Online")->setArgument($this, "id of the var", $varToPass);
+```
+You can see them by adding this line.
+```php
+$args = $this->getServer()->getPluginManager()->getPlugin("Online")->getArguments($this);
+```
+This gives you the ability to show custom things related to the server on the files.    
+    
+
+Please note that all variables passed (default & customs) are refreshed every 10 seconfs.
+##### Custom handlers.
+This is the most powerfull way to customize your webserver.     
+Custom handlers are PHP files that are executed each time a request to the server is done.    
+To add a custom handler, create a new PHP file into your plugin src and add this line of code to your main file:
+```php
+$this->getServer()->getPluginManager()->getPlugin("Online")->addHandler(&#95;&#95;DIR&#95;&#95; . "/handler.php");
+```
+You can also see all the handlers by doing:
+```php
+$handlers = $this->getServer()->getPluginManager()->getPlugin("Online")->getHandlers();
 ```
 =======
 That's it so I hoope you will enjoy my plugin !
