@@ -3,6 +3,6 @@ branches:
 - master
 projects:
   Online:
-    icon: "icon.png"
+    icon: "Online-Eclipse-Modified.png"
     path: ""
 ...
