@@ -3,5 +3,6 @@ branches:
 - master
 projects:
   Online:
+    icon: "icon.png"
     path: ""
 ...
